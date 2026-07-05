@@ -74,47 +74,27 @@ export function drawHand(
   activeX: number, // un-mirrored (raw MediaPipe) X for the active point
   activeY: number,
 ): void {
-  // --- Connections --------------------------------------------------------
-  ctx.strokeStyle = "rgba(0, 255, 136, 0.45)";
-  ctx.lineWidth = 2;
-  ctx.lineCap = "round";
+  // If no action is being taken, keep the canvas clean.
+  if (state === "IDLE") return;
 
-  for (const [a, b] of HAND_CONNECTIONS) {
-    ctx.beginPath();
-    ctx.moveTo(landmarks[a].x * w, landmarks[a].y * h);
-    ctx.lineTo(landmarks[b].x * w, landmarks[b].y * h);
-    ctx.stroke();
-  }
-
-  // --- Landmark dots ------------------------------------------------------
-  for (const lm of landmarks) {
-    ctx.beginPath();
-    ctx.arc(lm.x * w, lm.y * h, 3, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-    ctx.fill();
-  }
-
-  // --- Active point glow --------------------------------------------------
-  const color = COLORS[state];
-  const radius = state === "ERASE" ? 24 : 12;
+  // ERASE represents a larger area (chalkboard eraser) -> 1.5x larger than draw (12 * 1.5 = 18).
+  const radius = state === "ERASE" ? 18 : 12;
   const cx = activeX * w;
   const cy = activeY * h;
 
-  // Outer glow
-  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 2);
-  grad.addColorStop(0, color + "55");
-  grad.addColorStop(1, color + "00");
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius * 2, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Inner dot
   ctx.beginPath();
   ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-  ctx.fillStyle = color + "88";
-  ctx.fill();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
+  
+  if (state === "ERASE") {
+    // Translucent black fill with a solid stroke for the eraser to not block light
+    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    ctx.fill();
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  } else {
+    // Solid black fill for drawing
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+  }
 }

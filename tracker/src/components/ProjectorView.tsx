@@ -31,7 +31,7 @@ const LASER_GLOW = "#00e5ff";
 const GLOW_RADIUS = 18;
 
 /** Eraser circle radius (px). */
-const ERASER_RADIUS = 32;
+const ERASER_RADIUS = 48;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -71,14 +71,24 @@ export default function ProjectorView() {
     // ------------------------------------------------------------------
     function sizeCanvas() {
       // Preserve existing drawing across resize.
-      const prev = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const prev = ctx.getImageData(0, 0, canvas!.width, canvas!.height);
+      canvas!.width = window.innerWidth;
+      canvas!.height = window.innerHeight;
+      
+      // Repintar o fundo de branco no resize
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas!.width, canvas!.height);
+      
       ctx.putImageData(prev, 0, 0);
     }
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    
+    // Preencher o fundo com branco imediatamente ao montar
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     window.addEventListener("resize", sizeCanvas);
 
     // ------------------------------------------------------------------
@@ -86,8 +96,7 @@ export default function ProjectorView() {
     // ------------------------------------------------------------------
 
     /**
-     * Draw a laser segment between two points.
-     * Three passes: outer glow → mid glow → white core.
+     * Draw a solid black segment between two points.
      */
     function drawLaser(
       x0: number,
@@ -103,29 +112,12 @@ export default function ProjectorView() {
       ctx.moveTo(x0, y0);
       ctx.lineTo(x1, y1);
 
-      // Pass 1 — wide outer glow
-      ctx.shadowColor = LASER_GLOW;
-      ctx.shadowBlur = GLOW_RADIUS;
-      ctx.strokeStyle = LASER_GLOW + "33"; // 20 % opacity
-      ctx.lineWidth = LASER_WIDTH + 8;
-      ctx.stroke();
-
-      // Pass 2 — tighter mid glow
-      ctx.shadowBlur = GLOW_RADIUS / 2;
-      ctx.strokeStyle = LASER_GLOW + "88"; // 53 % opacity
-      ctx.lineWidth = LASER_WIDTH + 3;
-      ctx.stroke();
-
-      // Pass 3 — solid white core
-      ctx.shadowBlur = 4;
-      ctx.shadowColor = "#ffffff";
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = LASER_WIDTH;
-      ctx.stroke();
-
-      // Reset shadow state so it doesn't bleed into subsequent draws.
+      // Traço preto sólido sem efeitos
       ctx.shadowBlur = 0;
       ctx.shadowColor = "transparent";
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = LASER_WIDTH;
+      ctx.stroke();
     }
 
     /**
@@ -139,7 +131,9 @@ export default function ProjectorView() {
       prevY?: number,
     ): void {
       ctx.save();
-      ctx.globalCompositeOperation = "destination-out";
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "#ffffff";
+      ctx.strokeStyle = "#ffffff";
 
       // Connect to previous position so fast movement doesn't leave gaps.
       if (prevX !== undefined && prevY !== undefined) {

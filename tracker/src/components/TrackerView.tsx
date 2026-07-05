@@ -117,7 +117,8 @@ export default function TrackerView() {
       canvas.height = CAM_H;
 
       ctx.save();
-      ctx.clearRect(0, 0, CAM_W, CAM_H);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, CAM_W, CAM_H);
 
       // Mirror horizontally so it feels like a mirror.
       ctx.translate(CAM_W, 0);

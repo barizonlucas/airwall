@@ -5,13 +5,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 
 :root {
-  --bg: #06060b;
-  --surface: rgba(255, 255, 255, 0.04);
-  --border: rgba(255, 255, 255, 0.07);
-  --text: #e4e4e7;
+  --bg: #ffffff; /* Fundo branco total para emissão de luz */
+  --surface: rgba(0, 0, 0, 0.04);
+  --border: rgba(0, 0, 0, 0.07);
+  --text: #000000;
   --text-dim: #52525b;
-  --draw: #00ff88;
-  --erase: #ff3b30;
+  --draw: #000000;
+  --erase: #000000;
   --idle: #52525b;
 }
 
@@ -50,9 +50,11 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  padding: 20px;
-  gap: 16px;
+  height: 100vh;
+  width: 100vw;
+  padding: 0;
+  margin: 0;
+  background: #ffffff;
 }
 
 /* ------------------------------------------------------------------ */
@@ -61,25 +63,19 @@ body {
 
 .video-wrapper {
   position: relative;
-  width: 100%;
-  max-width: 1280px;
-  aspect-ratio: 16 / 9;
-  border-radius: 16px;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  aspect-ratio: auto;
+  border-radius: 0;
   overflow: hidden;
-  border: 1px solid var(--border);
-  background: #0d0d14;
-  box-shadow:
-    0 0 0 1px rgba(0, 255, 136, 0.03),
-    0 4px 40px rgba(0, 0, 0, 0.6),
-    0 0 120px rgba(0, 255, 136, 0.03);
+  border: none;
+  background: #ffffff;
+  box-shadow: none;
 }
 
 .tracker-video {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(-1); /* mirror for selfie view */
+  display: none; /* Hide video feed, keeping only canvas */
 }
 
 .tracker-canvas {
@@ -138,6 +134,10 @@ body {
 /* ------------------------------------------------------------------ */
 
 .status-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 24px;
@@ -148,6 +148,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 12px;
   font-size: 13px;
+  z-index: 10;
 }
 
 .status-group {
